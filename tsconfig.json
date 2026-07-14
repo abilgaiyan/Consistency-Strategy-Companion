@@ -20,7 +20,14 @@
         "./*"
       ]
     },
+    "baseUrl": ".",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "noEmit": true
-  }
+  },
+  "include": [
+    "src/**/*",
+    "firebase-applet-config.json"
+  ]
 }
