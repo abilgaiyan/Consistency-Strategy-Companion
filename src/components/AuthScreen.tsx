@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from "firebase/auth";
-import { auth, db } from "../lib/firebase";
+import { auth, db, firebaseConfig } from "../lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Shield, Sparkles, Loader2, KeyRound, Mail, AlertCircle, ArrowRight } from "lucide-react";
 
@@ -46,7 +46,9 @@ export default function AuthScreen() {
       }
     } catch (err: any) {
       console.error("Auth error:", err);
-      if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+      if (err.code === "auth/admin-restricted-operation" || err.message?.includes("admin-restricted-operation")) {
+        setError("admin-restricted-operation");
+      } else if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
         setError("Invalid email or password.");
       } else if (err.code === "auth/email-already-in-use") {
         setError("This email address is already in use.");
@@ -80,7 +82,11 @@ export default function AuthScreen() {
       }
     } catch (err: any) {
       console.error("Anonymous auth error:", err);
-      setError(err.message || "Failed to start anonymous session.");
+      if (err.code === "auth/admin-restricted-operation" || err.message?.includes("admin-restricted-operation")) {
+        setError("admin-restricted-operation");
+      } else {
+        setError(err.message || "Failed to start anonymous session.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -150,9 +156,29 @@ export default function AuthScreen() {
             </div>
 
             {error && (
-              <div className="p-3 bg-rose-50 border border-rose-100 rounded-xl flex items-start gap-2.5 text-xs text-rose-600 font-medium leading-normal">
-                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                <span>{error}</span>
+              <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl flex flex-col gap-2.5 text-xs text-rose-600 font-medium leading-normal">
+                {error === "admin-restricted-operation" ? (
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2 text-rose-700">
+                      <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <span className="font-bold">Authentication Providers Disabled</span>
+                    </div>
+                    <p className="text-slate-600 leading-relaxed font-sans">
+                      The sign-in methods are disabled in your Firebase project. To enable them, please:
+                    </p>
+                    <ol className="list-decimal pl-5 space-y-1 text-slate-600 font-sans leading-relaxed">
+                      <li>Go to your <a href={`https://console.firebase.google.com/project/${firebaseConfig?.projectId || "gen-lang-client-0249032212"}/authentication/providers`} target="_blank" rel="noreferrer" className="underline font-bold text-indigo-600 hover:text-indigo-700">Firebase Console</a>.</li>
+                      <li>Go to the <span className="font-bold">Sign-in method</span> tab under Authentication.</li>
+                      <li>Enable <span className="font-bold">Email/Password</span> and <span className="font-bold">Anonymous</span>.</li>
+                      <li>Save the changes and try signing in again.</li>
+                    </ol>
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )}
               </div>
             )}
 
