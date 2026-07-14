@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile containing settings, preferences, and custom API keys.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The unique Firebase Authentication UID."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address."
+        },
+        "customGeminiApiKey": {
+          "type": "string",
+          "description": "User-configured custom Gemini API key."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the user profile was last updated."
+        }
+      },
+      "required": ["userId", "email"]
+    },
+    "Task": {
+      "title": "Consistency Task",
+      "description": "A task/habit that the user wants to tackle consistently.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique task ID."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The owner's Firebase Authentication UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "The hard task/habit name."
+        },
+        "context": {
+          "type": "string",
+          "description": "The user-supplied optional context of why it is hard."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp."
+        },
+        "blueprint": {
+          "type": "object",
+          "description": "The AI-generated strategy blueprint."
+        },
+        "history": {
+          "type": "array",
+          "description": "List of dates (YYYY-MM-DD) when the task was completed."
+        },
+        "streak": {
+          "type": "integer",
+          "description": "Current consecutive active days."
+        },
+        "maxStreak": {
+          "type": "integer",
+          "description": "Longest active streak achieved."
+        },
+        "lastCompletedDate": {
+          "type": "string",
+          "description": "The date of last completion (YYYY-MM-DD)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp."
+        }
+      },
+      "required": ["id", "userId", "name", "createdAt", "history", "streak", "maxStreak"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and settings."
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Consistency tasks created by users."
+    }
+  }
+}

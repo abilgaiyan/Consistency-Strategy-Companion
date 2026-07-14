@@ -1,0 +1,6 @@
+{
+  "name": "Consistency Strategy Companion",
+  "description": "An interactive workspace to apply the five strategies for doing hard things with zero motivation, featuring customized AI breakdowns and a consistency tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
